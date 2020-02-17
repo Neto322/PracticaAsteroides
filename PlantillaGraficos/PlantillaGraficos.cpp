@@ -21,9 +21,12 @@ double tiempoactual, tiempoanterior;
 
 float posXtriangulo = 0.0f, posYtriangulo = 0.0f,rotXtriangulo = 0.0f, rotYtriangulo = 0.0f, angulo = 0.0f;
 
-float dirrecionX = 0.0F;
 
-float dirrecionY = 0.0F;
+float velTriangulo = 1.0f;
+
+float velAngular = 90;
+
+
 
 //Declarar ventana
 GLFWwindow* window;
@@ -55,21 +58,19 @@ void actualizar()
 {
 	tiempoactual = glfwGetTime();
 
-
-
 	double tiempoDiferencial = tiempoactual - tiempoanterior;
 
-
-	dirrecionX = sinf(angulo);
-
-	dirrecionY = cosf(angulo);
-
-	int estadoarriba = glfwGetKey(window, GLFW_KEY_UP);
+	int estadoarriba = glfwGetKey(window, GLFW_KEY_W);
 
 	if (estadoarriba == GLFW_PRESS)
 	{
-		posYtriangulo += cosf(2 * 3.1415 * (angulo / 360.0f)) * tiempoDiferencial;
-		posXtriangulo -= sinf(2 * 3.1415 * (angulo / 360.0f)) * tiempoDiferencial;
+
+		posXtriangulo +=  velTriangulo * cos((angulo + 90)* 3.141592 / 180.0f) * tiempoDiferencial;
+
+
+		posYtriangulo += velTriangulo * sin((angulo + 90) * 3.141592 / 180.0f) * tiempoDiferencial;
+
+
 	}
 
 
@@ -77,20 +78,14 @@ void actualizar()
 
 	if(estadorotizquierda == GLFW_PRESS)
 	{
-		angulo -= 0.0348f;
-		rotXtriangulo += 0.01f * 6920 * tiempoDiferencial;;
-		
+		angulo += velAngular * tiempoDiferencial;
 	}
 
 	int estadorotderecha = glfwGetKey(window, GLFW_KEY_D);
 	
 	if (estadorotderecha == GLFW_PRESS)
 	{
-		angulo += 0.0348f;
-
-		rotXtriangulo -= 0.01f * 6920 * tiempoDiferencial;
-		
-
+		angulo -= velAngular * tiempoDiferencial;
 	}
 
 	if (angulo > 360.0f)
@@ -113,7 +108,7 @@ void dibujar() {
 
 	glTranslatef(posXtriangulo, posYtriangulo,0.0f);
 
-	glRotatef(rotXtriangulo,0.0f, 0.0F,1.0f);
+	glRotatef(angulo,0.0f, 0.0F,1.0f);
 
 	glScalef(0.5f, 1.0f, 1.0f);
 
@@ -193,18 +188,15 @@ int main()
 		//Borrar!
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		//Actualizar valores y dibujar
-
+		actualizar();
 		dibujar();
 
-		actualizar();
 
 
 		glfwPollEvents();
 
 		glfwSwapBuffers(window);
-		cout << " X  " << dirrecionX;
 
-		cout << " Y  " << dirrecionY;
 
 	}
 	//Despues del ciclo de dibujo
